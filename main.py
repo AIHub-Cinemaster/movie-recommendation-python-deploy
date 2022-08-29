@@ -100,40 +100,24 @@ async def recommend_movie(shortId: str):
     if not auth_data:
         raise HTTPException(status_code=404, detail="User not found")
 
-    # ---------- 추천 알고리즘 ----------
-    userId = shortId
-    top_n = 300
+    recommend_data = recommends.find_one({"userRef": auth_data})
 
-    not_seen_list = get_not_seen_movie(ratings, movies, userId)
-    top_movies_preds = recommend(algo, userId, not_seen_list, top_n)
+    if not recommend_data:
+        result = {"result": "추천 영화 목록 조회 실패"}
+        return result
+    else:
+        # recommends collection에서 랜덤 데이터 추출
+        pipeline = [
+            {"$match": {"userRef": auth_data}},
+            {"$unwind": "$recommendList"},
+            {"$sample": {"size": 20}}
+        ]
 
-    recommend_list = []
+        random_data = recommends.aggregate(pipeline)
 
-    for top_movie in top_movies_preds:
-        dict = {"movieId": top_movie[0], "star": top_movie[1]}
-        recommend_list.append(dict)
-    # print(recommend_list)
-    # ----------------------------------------
-
-    # document create & update
-    recommends.find_one_and_update(
-        {"userRef": auth_data},
-        {"$set": {"userRef": auth_data, "recommendList": recommend_list}},
-        upsert=True
-    )
-
-    # recommends collection에서 랜덤 데이터 추출
-    pipeline = [
-        {"$match": {"userRef": auth_data}},
-        {"$unwind": "$recommendList"},
-        {"$sample": {"size": 20}}
-    ]
-
-    random_data = recommends.aggregate(pipeline)
-
-    result = []
-    for data in random_data:
-        result.append(data["recommendList"])
+        result = []
+        for data in random_data:
+            result.append(data["recommendList"])
 
     return {"recommendList": result}
 
@@ -245,6 +229,30 @@ async def write_movie(item: Item):
     for movie_id, star in zip(movie_arr, star_arr):
         dict = {"movieId": movie_id, "star": star}
         result.append(dict)
+
+    recommends = db.recommends
+
+    # ---------- 추천 알고리즘 ----------
+    userId = short_id
+    top_n = 300
+
+    not_seen_list = get_not_seen_movie(ratings, movies, userId)
+    top_movies_preds = recommend(algo, userId, not_seen_list, top_n)
+
+    recommend_list = []
+
+    for top_movie in top_movies_preds:
+        dict = {"movieId": top_movie[0], "star": top_movie[1]}
+        recommend_list.append(dict)
+    # print(recommend_list)
+    # ----------------------------------------
+
+    # document create & update
+    recommends.find_one_and_update(
+        {"userRef": auth_data},
+        {"$set": {"userRef": auth_data, "recommendList": recommend_list}},
+        upsert=True
+    )
 
     return {"shortId": short_id, "result": result}
 
