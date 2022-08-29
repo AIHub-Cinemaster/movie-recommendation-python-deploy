@@ -57,7 +57,7 @@ client = MongoClient(
 
 print(client.list_database_names())
 
-db = client.test
+db = client.cinema
 print(db)
 print(db.users)
 
