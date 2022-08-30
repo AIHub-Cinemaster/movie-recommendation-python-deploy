@@ -140,6 +140,8 @@ async def recommend_movie(shortId: str):
 
         result = jsonable_encoder(result)
 
+    print(type(JSONResponse(content={"recommendList": result})))
+    print(JSONResponse(result))
     # return {"recommendList": result}
     return JSONResponse(content={"recommendList": result})
 
@@ -185,8 +187,11 @@ async def random_movie(movieCount: int):
 
     result = []
     for movieId in movie_id:
-        dict = {"movieId": movieId}
-        result.append(dict)
+        # dict = {"movieId": movieId}
+        # result.append(dict)
+        result.append(movieId)
+
+    print(result)
 
     result = jsonable_encoder(result)
 
