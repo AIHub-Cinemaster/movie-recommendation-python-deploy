@@ -55,6 +55,7 @@ class Item(BaseModel):
 app = FastAPI()
 
 # cors 해결
+origins = ["*"]
 origins = [
     "https://cinemaster-four.herokuapp.com",
     "https://cinemaster-four.herokuapp.com:5000"
