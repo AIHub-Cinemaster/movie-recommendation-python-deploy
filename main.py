@@ -53,7 +53,7 @@ app = FastAPI()
 username = "Hyyena"
 password = "TxOPQ4CyleYvXi8D"
 client = MongoClient(
-    "mongodb+srv://%s:%s@cinemaster.edkazqq.mongodb.net/?retryWrites=true&w=majority" % (username, password), tlsCAFile=certifi.where())
+    "mongodb+srv://%s:%s@cinemaster.edkazqq.mongodb.net/cinema?retryWrites=true&w=majority" % (username, password), tlsCAFile=certifi.where())
 
 print(client.list_database_names())
 
@@ -217,7 +217,8 @@ async def write_movie(item: Item):
         star_arr.append(movie.star)
 
     # 영화 ID와 평점 배열을 DataFrame으로 변환
-    df = pd.DataFrame({"userId": short_id, "movieId": movie_arr, "rating": star_arr})
+    df = pd.DataFrame(
+        {"userId": short_id, "movieId": movie_arr, "rating": star_arr})
 
     # 변환한 DataFrame을 기존 DataFrame에 추가
     new_df = ratings.append(df, ignore_index=True)
