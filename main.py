@@ -171,7 +171,7 @@ async def random_movie(movieCount: int):
 
 # 평가 데이터 저장
 @app.post(
-    "/eval/",
+    "/eval",
     responses={
         200: {
             "description": "평가 영화 제출 완료!",
