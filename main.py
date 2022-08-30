@@ -5,6 +5,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from pymongo import MongoClient
 from pydantic import BaseModel
+from starlette.middleware.cors import CORSMiddleware
 import certifi
 
 import pandas as pd
