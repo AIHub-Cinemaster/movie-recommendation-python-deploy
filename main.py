@@ -1,5 +1,8 @@
 from typing import List, Union
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 from pymongo import MongoClient
 from pydantic import BaseModel
 from starlette.middleware.cors import CORSMiddleware
@@ -41,7 +44,7 @@ algo.fit(train_set)
 
 class Movies(BaseModel):
     movieId: str
-    star: float
+    rating: float
 
 
 class Item(BaseModel):
@@ -137,7 +140,12 @@ async def recommend_movie(shortId: str):
         for data in random_data:
             result.append(data["recommendList"])
 
-    return {"recommendList": result}
+        result = jsonable_encoder(result)
+
+    print(type(JSONResponse(content={"recommendList": result})))
+    print(JSONResponse(result))
+    # return {"recommendList": result}
+    return JSONResponse(content={"recommendList": result})
 
 
 # 평가할 영화 랜덤 조회
@@ -181,13 +189,20 @@ async def random_movie(movieCount: int):
 
     result = []
     for movieId in movie_id:
-        dict = {"movieId": movieId}
-        result.append(dict)
+        # dict = {"movieId": movieId}
+        # result.append(dict)
+        result.append(movieId)
 
-    return {"movieNum": movieCount, "result": result}
+    print(result)
 
+    result = jsonable_encoder(result)
+
+    # return {"movieNum": movieCount, "result": result}
+    return JSONResponse(content={"movieNum": movieCount, "result": result})
 
 # 평가 데이터 저장
+
+
 @app.post(
     "/eval",
     responses={
@@ -234,6 +249,9 @@ async def write_movie(item: Item):
         movie_arr.append(movie.movieId)
         star_arr.append(movie.star)
 
+    print(movie_arr)
+    print(star_arr)
+
     # 영화 ID와 평점 배열을 DataFrame으로 변환
     df = pd.DataFrame(
         {"userId": short_id, "movieId": movie_arr, "rating": star_arr})
@@ -248,6 +266,8 @@ async def write_movie(item: Item):
     for movie_id, star in zip(movie_arr, star_arr):
         dict = {"movieId": movie_id, "star": star}
         result.append(dict)
+
+    print(result)
 
     recommends = db.recommends
 
@@ -273,8 +293,10 @@ async def write_movie(item: Item):
         upsert=True
     )
 
-    return {"shortId": short_id, "result": result}
+    result = jsonable_encoder(result)
 
+    # return {"shortId": short_id, "result": result}
+    return JSONResponse(content={"shortId": short_id, "result": result})
 
 # if __name__ == "__main__":
 #     import uvicorn
