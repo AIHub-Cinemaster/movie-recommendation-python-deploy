@@ -1,5 +1,8 @@
 from typing import List, Union
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 from pymongo import MongoClient
 from pydantic import BaseModel
 import certifi
@@ -49,6 +52,20 @@ class Item(BaseModel):
 
 
 app = FastAPI()
+
+# cors 해결
+origins = [
+    "https://cinemaster-four.herokuapp.com",
+    "https://cinemaster-four.herokuapp.com:5000"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 username = "Hyyena"
 password = "TxOPQ4CyleYvXi8D"
@@ -119,7 +136,10 @@ async def recommend_movie(shortId: str):
         for data in random_data:
             result.append(data["recommendList"])
 
-    return {"recommendList": result}
+        result = jsonable_encoder(result)
+
+    # return {"recommendList": result}
+    return JSONResponse(content={"recommendList": result})
 
 
 # 평가할 영화 랜덤 조회
@@ -166,8 +186,10 @@ async def random_movie(movieCount: int):
         dict = {"movieId": movieId}
         result.append(dict)
 
-    return {"movieNum": movieCount, "result": result}
+    result = jsonable_encoder(result)
 
+    # return {"movieNum": movieCount, "result": result}
+    return JSONResponse(content={"movieNum": movieCount, "result": result})
 
 # 평가 데이터 저장
 @app.post(
@@ -255,8 +277,10 @@ async def write_movie(item: Item):
         upsert=True
     )
 
-    return {"shortId": short_id, "result": result}
+    result = jsonable_encoder(result)
 
+    # return {"shortId": short_id, "result": result}
+    return JSONResponse(content={"shortId": short_id, "result": result})
 
 # if __name__ == "__main__":
 #     import uvicorn
