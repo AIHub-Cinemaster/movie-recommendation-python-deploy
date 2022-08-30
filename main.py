@@ -44,7 +44,7 @@ algo.fit(train_set)
 
 class Movies(BaseModel):
     movieId: str
-    star: float
+    rating: float
 
 
 class Item(BaseModel):
@@ -245,6 +245,9 @@ async def write_movie(item: Item):
         movie_arr.append(movie.movieId)
         star_arr.append(movie.star)
 
+    print(movie_arr)
+    print(star_arr)
+
     # 영화 ID와 평점 배열을 DataFrame으로 변환
     df = pd.DataFrame(
         {"userId": short_id, "movieId": movie_arr, "rating": star_arr})
@@ -259,6 +262,8 @@ async def write_movie(item: Item):
     for movie_id, star in zip(movie_arr, star_arr):
         dict = {"movieId": movie_id, "star": star}
         result.append(dict)
+
+    print(result)
 
     recommends = db.recommends
 
