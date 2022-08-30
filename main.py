@@ -52,10 +52,13 @@ class Item(BaseModel):
 app = FastAPI()
 
 # cors 해결
-origins = [
-    "https://cinemaster-four.herokuapp.com",
-    "https://cinemaster-four.herokuapp.com:5000"
-]
+# origins = [
+#     "https://cinemaster-four.herokuapp.com",
+#     "https://cinemaster-four.herokuapp.com:5000",
+
+# ]
+
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
