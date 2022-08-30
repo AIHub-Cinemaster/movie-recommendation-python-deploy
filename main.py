@@ -2,6 +2,7 @@ from typing import List, Union
 from fastapi import FastAPI, HTTPException
 from pymongo import MongoClient
 from pydantic import BaseModel
+from starlette.middleware.cors import CORSMiddleware
 import certifi
 
 import pandas as pd
@@ -49,6 +50,20 @@ class Item(BaseModel):
 
 
 app = FastAPI()
+
+# cors 해결
+origins = [
+    "https://cinemaster-four.herokuapp.com",
+    "https://cinemaster-four.herokuapp.com:5000"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 username = "Hyyena"
 password = "TxOPQ4CyleYvXi8D"
