@@ -242,19 +242,19 @@ async def write_movie(item: Item):
         raise HTTPException(status_code=404, detail="User not found")
 
     movie_arr = []
-    star_arr = []
+    rating_arr = []
 
     # 빈 배열에 요청 받은 영화 ID와 평점을 저장
     for movie in item.movieList:
         movie_arr.append(movie.movieId)
-        star_arr.append(movie.star)
+        rating_arr.append(movie.rating)
 
     print(movie_arr)
-    print(star_arr)
+    print(rating_arr)
 
     # 영화 ID와 평점 배열을 DataFrame으로 변환
     df = pd.DataFrame(
-        {"userId": short_id, "movieId": movie_arr, "rating": star_arr})
+        {"userId": short_id, "movieId": movie_arr, "rating": rating_arr})
 
     # 변환한 DataFrame을 기존 DataFrame에 추가
     new_df = ratings.append(df, ignore_index=True)
@@ -263,8 +263,8 @@ async def write_movie(item: Item):
     new_df.to_csv("data/ratings_small.csv", index=False)
 
     result = []
-    for movie_id, star in zip(movie_arr, star_arr):
-        dict = {"movieId": movie_id, "star": star}
+    for movie_id, rating in zip(movie_arr, rating_arr):
+        dict = {"movieId": movie_id, "star": rating}
         result.append(dict)
 
     print(result)
