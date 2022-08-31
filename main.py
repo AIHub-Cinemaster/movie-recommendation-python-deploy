@@ -124,10 +124,9 @@ async def recommend_movie(shortId: str):
         raise HTTPException(status_code=404, detail="User not found")
 
     recommend_data = recommends.find_one({"userRef": auth_data})
-    print("222 : ", auth_data)
+    print("222 : ", recommend_data)
     if not recommend_data:
-        result = {"result": "추천 영화 목록 조회 실패"}
-        return result
+        return JSONResponse(content={"result": "추천 영화 목록 조회 실패"})
     else:
         # recommends collection에서 랜덤 데이터 추출
         pipeline = [
