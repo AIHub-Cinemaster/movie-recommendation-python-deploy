@@ -82,8 +82,11 @@ db = client.cinema
 print(db)
 print(db.users)
 
-
+##
 # 유저별 추천 영화 목록 조회
+##
+
+
 @app.get(
     "/recommendation/{shortId}",
     responses={
@@ -114,9 +117,9 @@ print(db.users)
 )
 async def recommend_movie(shortId: str):
     recommends = db.recommends
-
+    print("111111 : ", recommends)
     auth_data = db.users.find_one({"shortId": shortId}, {"_id": 0})
-    print(auth_data)
+    print("222222 : ", auth_data)
 
     if not auth_data:
         raise HTTPException(status_code=404, detail="User not found")
@@ -147,8 +150,11 @@ async def recommend_movie(shortId: str):
     # return {"recommendList": result}
     return JSONResponse(content={"recommendList": result})
 
-
+##
 # 평가할 영화 랜덤 조회
+##
+
+
 @app.get(
     "/eval/{movieCount}",
     responses={
@@ -200,7 +206,9 @@ async def random_movie(movieCount: int):
     # return {"movieNum": movieCount, "result": result}
     return JSONResponse(content={"movieNum": movieCount, "result": result})
 
+##
 # 평가 데이터 저장
+##
 
 
 @app.post(
