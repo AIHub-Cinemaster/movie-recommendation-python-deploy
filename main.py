@@ -117,15 +117,14 @@ print(db.users)
 )
 async def recommend_movie(shortId: str):
     recommends = db.recommends
-    print("111111 : ", recommends)
     auth_data = db.users.find_one({"shortId": shortId}, {"_id": 0})
-    print("222222 : ", auth_data)
+    print("111 : ", auth_data)
 
     if not auth_data:
         raise HTTPException(status_code=404, detail="User not found")
 
     recommend_data = recommends.find_one({"userRef": auth_data})
-
+    print("222 : ", auth_data)
     if not recommend_data:
         result = {"result": "추천 영화 목록 조회 실패"}
         return result
@@ -293,7 +292,7 @@ async def write_movie(item: Item):
         recommend_list.append(dict)
     # print(recommend_list)
     # ----------------------------------------
-
+    print("recommend_list : ", recommend_list)
     # document create & update
     recommends.find_one_and_update(
         {"userRef": auth_data},
@@ -302,7 +301,7 @@ async def write_movie(item: Item):
     )
 
     result = jsonable_encoder(result)
-
+    print("result", result)
     # return {"shortId": short_id, "result": result}
     return JSONResponse(content={"shortId": short_id, "result": result})
 
